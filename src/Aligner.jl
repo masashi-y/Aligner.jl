@@ -3,7 +3,6 @@ module Aligner
 export align,
        levenshtein,
        generic_edit_distance,
-       normalized_word_distance,
        Alignment,
        null
 
@@ -78,12 +77,6 @@ levenshtein(seq1, seq2) = generic_distance_matrix(seq1, seq2, 1, 1, 2)[end, end]
 
 generic_edit_distance(seq1, seq2, ins, del, sub) = generic_distance_matrix(seq1, seq2, ins, del, sub)[end, end]
 
-# edit distance of two words
-word_distance(seq1,seq2) = generic_edit_distance(seq1, seq2, 1, 1, (x, y) -> x == y ? 0 : 1) 
-
-# normalized edit distance of two words
-normalized_word_distance(seq1,seq2) = word_distance(seq1,seq2) / max(length(seq1), length(seq2))
-
 function align{A,B}(
     seq1::Vector{A},
     seq2::Vector{B},
@@ -154,19 +147,5 @@ function printmat(m)
     end
 end
 
-# rawsent1 = "i played in the jazz combo all four years"
-# rawsent2 = "i played in the jazz calm bowl all four years"
-#
-# sent1 = split(rawsent1, " ")
-# sent2 = split(rawsent2, " ")
-#
-# mat = generic_distance_matrix(sent1, sent2, 1, 1, normalized_word_distance)
-# printmat(mat)
-#
-# alignment = align(sent1, sent2, 1, 1, normalized_word_distance)
-# println(alignment.res1)
-# println(alignment.res2)
-# printmat(alignment.mat)
-# println(alignment.idx1)
 
 end # module
