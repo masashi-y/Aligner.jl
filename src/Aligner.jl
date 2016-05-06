@@ -18,6 +18,7 @@ null{S<:AbstractString}(::Type{S}) = S("N")
 null{S<:AbstractString}(::Type{SubString{S}}) = S("N")
 
 cost_func(cost) = (x, y) -> cost
+equality(cost) = (x, y) -> x == y ? 0 : cost
 
 function generic_distance_matrix{A,B}(
     seq1::Vector{A},
@@ -52,7 +53,7 @@ function generic_distance_matrix{A,B,C<:Real}(
     del_cost::C,
     sub_cost::C
 )
-    generic_distance_matrix(seq1, seq2, cost_func(ins_cost), cost_func(del_cost), cost_func(sub_cost))
+    generic_distance_matrix(seq1, seq2, cost_func(ins_cost), cost_func(del_cost), equality(sub_cost))
 end
 
 function generic_distance_matrix{A,B,C<:Real}(
@@ -122,7 +123,7 @@ function align{A,B,C<:Real}(
     del_cost::C,
     sub_cost::C
 )
-    align(seq1, seq2, cost_func(ins_cost), cost_func(del_cost), cost_func(sub_cost))
+    align(seq1, seq2, cost_func(ins_cost), cost_func(del_cost), equality(sub_cost))
 end
 
 function align{A,B,C<:Real}(

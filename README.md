@@ -15,7 +15,7 @@ perform alignment based on edit distance
     julia> println(res.target)
     SubString{ASCIIString}["i","played","in","the","jazz","calm","bowl","all","four","years"]
     
-You can define some binary cost function and pass to align function
+You can define some binary cost function and pass to `align` function
 
     julia> d(s,t) = generic_edit_distance(s, t, 1, 1, (x,y)-> x == y ? 0 : 1) / max(length(s), length(t))
     d (generic function with 1 method)
@@ -28,8 +28,8 @@ You can define some binary cost function and pass to align function
     julia> println(res.target)
     SubString{ASCIIString}["i","played","in","the","jazz","calm","bowl","all","four","years"]
 
-Alignment can be made between two Vector (one-dimensinoal Array) of any types,
-if you define Aligner.null function for aligned items.
+Alignment can be made between two `Vector`s (one-dimensinoal `Array`) of any types,
+if you define `Aligner.null` function for aligned items.
 
     julia> type Word
                str
@@ -60,4 +60,4 @@ if you define Aligner.null function for aligned items.
 As can be seen in the result, Aligner.null function is called to fill in null token,
 in this example it means that "calm" in target has no correspondence.
 #### Reference
-[Levenshtein distance/Alignment - Rosetta Code:][https://rosettacode.org/wiki/Levenshtein_distance/Alignment]
+[Levenshtein distance/Alignment - Rosetta Code:](https://rosettacode.org/wiki/Levenshtein_distance/Alignment)
