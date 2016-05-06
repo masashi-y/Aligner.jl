@@ -9,13 +9,11 @@ Aligner.jl exports following functions:
 * null(::Type{})
 
 where ins, del, sub arguments are the real valued (some T s.t. T<:Real) costs
-for insertion, deletion and substitution.
+for insertion, deletion and substitution.  
 these argements can also be some binary function; the detail is given in Usage.
 
-`levenshtein` calculates levenshtein edit distance, which actually is implemented as
+`levenshtein` calculates levenshtein edit distance, which actually is implemented as  
 `generic_edit_distance(source, target, 1, 1, 1)`.
-
-The other details are given in Usage.
 
 # Usage
     julia> using Aligner
@@ -30,10 +28,11 @@ The other details are given in Usage.
     julia> println(convert(ASCIIString, res.target))
     raisethysword
 
-`align` function returns `Alignment` type object with five fields; the others are
-`source_to_target`, `target_to_source`, which encode information such as
-nth element in the source corresponds to mth element in the target,
-and `mat`, which is 2-dimensional matrix used to calculate edit distance
+`align` function returns `Alignment` type object with five fields;  
+* `source`, `target` as shown in the example
+* `source_to_target`, `target_to_source`, which encode information such as
+Nth element in the source corresponds to Mth element in the target
+* `mat`, which is 2-dimensional matrix used to calculate edit distance
 
 You can define some binary cost function and pass to `align` function
 
@@ -50,7 +49,7 @@ You can define some binary cost function and pass to `align` function
     SubString{ASCIIString}["i","played","in","the","jazz","N","combo","all","four","years"]
     SubString{ASCIIString}["i","played","in","the","jazz","calm","bowl","all","four","years"]
 
-Alignment can be made between two `Vector`s (one-dimensinoal `Array`) of any types,
+Alignment can be made between two `Vector`s (one-dimensinoal `Array`) of any types,  
 if you define `Aligner.null` function for the aligned types.
 
     julia> type Word
@@ -75,7 +74,8 @@ if you define `Aligner.null` function for the aligned types.
     SubString{ASCIIString}["i","played","in","the","jazz","calm","bowl","all","four","years"]
 
 
-As can be seen in the result, `Aligner.null` function is called to fill in null token,
+As can be seen in the result, `Aligner.null` function is called to fill in null token,  
 in this example it means that "calm" in target has no correspondence in the source.
+
 #### Reference
 [Levenshtein distance/Alignment - Rosetta Code:](https://rosettacode.org/wiki/Levenshtein_distance/Alignment)
