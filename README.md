@@ -1,39 +1,63 @@
 # Aligner.jl
 perform alignment based on edit distance
 
+Aligner.jl exports following functions:
+* align(source, target, ins, del, sub)
+* generic_edit_distance(source, target, ins, del, sub)
+* levenshtein(source, target)
+* Alignment
+* null(::Type{})
+
+where ins, del, sub arguments are the real valued (some T s.t. T<:Real) costs
+for insertion, deletion and substitution.
+these argements can also be some binary function; the detail is given in Usage.
+
+`levenshtein` calculates levenshtein edit distance, which actually is implemented as
+`generic_edit_distance(source, target, 1, 1, 1)`.
+
+The other details are given in Usage.
+
+# Usage
     julia> using Aligner
-    
-    julia> source = split("i played in the jazz combo all four years", " ");
-    
-    julia> target = split("i played in the jazz calm bowl all four years", " ");
-    
-    julia> align(source, target, 1, 1, 2);
-    
-    julia> println(res.source)
-    SubString{ASCIIString}["N","i","played","in","the","jazz","combo","all","four","years"]
-    
-    julia> println(res.target)
-    SubString{ASCIIString}["i","played","in","the","jazz","calm","bowl","all","four","years"]
-    
+
+    julia> source = collect("rosettacode"); target = collect("raisethysword"); # converting to Array{Char}
+
+    julia> res = align(source, target, 1, 1, 1); # all the insertion, deletion, substitution costs are 1.
+
+    julia> println(convert(ASCIIString, res.source))
+    r-oset-tacode
+
+    julia> println(convert(ASCIIString, res.target))
+    raisethysword
+
+`align` function returns `Alignment` type object with five fields; the others are
+`source_to_target`, `target_to_source`, which encode information such as
+nth element in the source corresponds to mth element in the target,
+and `mat`, which is 2-dimensional matrix used to calculate edit distance
+
 You can define some binary cost function and pass to `align` function
 
-    julia> d(s,t) = generic_edit_distance(s, t, 1, 1, (x,y)-> x == y ? 0 : 1) / max(length(s), length(t))
-    d (generic function with 1 method)
-    
-    julia> res = align(source, target, 1, 1, d);
-    
-    julia> println(res.source)
+    julia> println(source, "\n", target)
+    SubString{ASCIIString}["i","played","in","the","jazz","combo","all","four","years"]
+    SubString{ASCIIString}["i","played","in","the","jazz","calm","bowl","all","four","years"]
+
+    julia> normalized_levenshtein(s,t) = levenshtein(s, t) / max(length(s), length(t))
+    normalized_levenshtein (generic function with 1 method)
+
+    julia> res = align(source, target, 1, 1, normalized_levenshtein);
+
+    julia> println(res.source, "\n", res.target)
     SubString{ASCIIString}["i","played","in","the","jazz","N","combo","all","four","years"]
-    
-    julia> println(res.target)
     SubString{ASCIIString}["i","played","in","the","jazz","calm","bowl","all","four","years"]
 
 Alignment can be made between two `Vector`s (one-dimensinoal `Array`) of any types,
-if you define `Aligner.null` function for aligned items.
+if you define `Aligner.null` function for the aligned types.
 
     julia> type Word
                str
            end
+
+    julia> Aligner.null(Word) = Word("NULL");
 
     julia> source = split("i played in the jazz combo all four years", " ");
 
@@ -41,23 +65,17 @@ if you define `Aligner.null` function for aligned items.
 
     julia> target = split("i played in the jazz calm bowl all four years", " ");
 
-    julia> Base.length(w::Word) = length(w.str);
+    julia> normalized_levenshtein(s::Word,t::AbstractString) = levenshtein(s.str, t) / max(length(s.str), length(t))
+    normalized_levenshtein (generic function with 2 method)
 
-    julia> d(s::Word,t::AbstractString) = Aligner.generic_edit_distance(s.str, t, 1, 1, (x,y)-> x == y ? 0 : 1) / max(length(s), length(t))
-    d (generic function with 1 method)
+    julia> res = align(source, target, 1, 1, normalized_levenshtein);
 
-    julia> Aligner.null(Word) = Word("NULL");
-
-    julia> res = align(source, target, 1, 1, d);
-
-    julia> println(res.source)
+    julia> println(res.source, "\n", res.target)
     [Word("i"),Word("played"),Word("in"),Word("the"),Word("jazz"),Word("NULL"),Word("combo"),Word("all"),Word("four"),Word("years")]
-
-    julia> println(res.target)
     SubString{ASCIIString}["i","played","in","the","jazz","calm","bowl","all","four","years"]
 
 
-As can be seen in the result, Aligner.null function is called to fill in null token,
-in this example it means that "calm" in target has no correspondence.
+As can be seen in the result, `Aligner.null` function is called to fill in null token,
+in this example it means that "calm" in target has no correspondence in the source.
 #### Reference
 [Levenshtein distance/Alignment - Rosetta Code:](https://rosettacode.org/wiki/Levenshtein_distance/Alignment)

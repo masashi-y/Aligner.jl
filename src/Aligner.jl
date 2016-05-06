@@ -14,6 +14,7 @@ type Alignment
     mat
 end
 
+null(::Type{Char}) = '-'
 null{S<:AbstractString}(::Type{S}) = S("N")
 null{S<:AbstractString}(::Type{SubString{S}}) = S("N")
 
