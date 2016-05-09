@@ -39,9 +39,11 @@ function generic_distance_matrix{A,B}(
     d[1,:] = 0:seq2len
 
     for i = 2:seq1len+1, j = 2:seq2len+1
+        ins = j < 3 ? 1 : ins_cost(seq1[i-1], seq2[j-2])
+        del = i < 3 ? 1 : del_cost(seq1[i-2], seq2[j-1])
+        # ins = ins_cost(seq1[i-1], seq2[j-1])
+        # del = del_cost(seq1[i-1], seq2[j-1])
         sub = sub_cost(seq1[i-1], seq2[j-1])
-        ins = j > seq2len ? 1 : ins_cost(seq1[i-1], seq2[j])
-        del = i > seq1len ? 1 : del_cost(seq1[i], seq2[j-1])
         d[i,j] = min(d[i-1,j]+ins, d[i,j-1]+del, d[i-1,j-1]+sub)
     end
     d
